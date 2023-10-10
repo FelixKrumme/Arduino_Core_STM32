@@ -9222,6 +9222,14 @@ GenL4.menu.pnum.GENERIC_L412KBUX.build.board=GENERIC_L412KBUX
 GenL4.menu.pnum.GENERIC_L412KBUX.build.product_line=STM32L412xx
 GenL4.menu.pnum.GENERIC_L412KBUX.build.variant=STM32L4xx/L412K(8-B)(T-U)_L422KB(T-U)
 
+# Generic L422CBTx
+GenL4.menu.pnum.GENERIC_L422CBTX=Generic L422CBTx
+GenL4.menu.pnum.GENERIC_L422CBTX.upload.maximum_size=131072
+GenL4.menu.pnum.GENERIC_L422CBTX.upload.maximum_data_size=40960
+GenL4.menu.pnum.GENERIC_L422CBTX.build.board=GENERIC_L422CBTX
+GenL4.menu.pnum.GENERIC_L422CBTX.build.product_line=STM32L422xx
+GenL4.menu.pnum.GENERIC_L422CBTX.build.variant=STM32L4xx/L412C(8-B)(T-U)_L422CB(T-U)
+
 # Generic L422KBTx
 GenL4.menu.pnum.GENERIC_L422KBTX=Generic L422KBTx
 GenL4.menu.pnum.GENERIC_L422KBTX.upload.maximum_size=131072
