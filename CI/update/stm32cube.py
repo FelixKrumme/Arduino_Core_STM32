@@ -56,6 +56,16 @@ core_CMSIS_versions = collections.OrderedDict()  # key: serie name, value: CMSIS
 md_CMSIS_path = "STM32YYxx_CMSIS_version.md"
 md_HAL_path = "STM32YYxx_HAL_Driver_version.md"
 
+# Pattern list of files to skip
+hal_skip_pattern = {"*.chm"}
+cmsis_skip_pattern = {"iar", "arm"}
+common_skip_pattern = {
+    ".github",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+}
+
 # stm32 def file to update
 stm32_def = "stm32_def.h"
 
@@ -316,9 +326,24 @@ def updateSTRepo():
                     f"{rname}/{bname}",
                 ],
             ]
+            gitmodule_path = repo_path / ".gitmodules"
+            if gitmodule_path.exists():
+                git_cmds += (
+                    [
+                        "git",
+                        "-C",
+                        repo_path,
+                        "submodule",
+                        "update",
+                        "--init",
+                        "--recursive",
+                    ],
+                )
         else:
             # Clone it as it does not exists yet
-            git_cmds = [["git", "-C", repo_local_path, "clone", gh_STM32Cube]]
+            git_cmds = [
+                ["git", "-C", repo_local_path, "clone", "--recursive", gh_STM32Cube]
+            ]
         for cmd in git_cmds:
             execute_cmd(cmd, None)
         latestTag(serie, repo_name, repo_path)
@@ -336,7 +361,10 @@ def latestTag(serie, repo_name, repo_path):
     version_tag = execute_cmd(
         ["git", "-C", repo_path, "describe", "--tags", sha1_id], None
     )
-    execute_cmd(["git", "-C", repo_path, "checkout", version_tag], subprocess.DEVNULL)
+    execute_cmd(
+        ["git", "-C", repo_path, "checkout", "-f", "--recurse-submodules", version_tag],
+        subprocess.DEVNULL,
+    )
     cube_versions[serie] = version_tag
     # print(f"Latest tagged version available for {repo_name} is {version_tag}")
 
@@ -827,7 +855,11 @@ Included in STM32Cube{0} FW {2}""".format(
             HAL_serie_cube_path = (
                 cube_path / hal_src_path / f"STM32{serie}xx_HAL_Driver"
             )
-            copyFolder(HAL_serie_cube_path, HAL_serie_core_path, {"*.chm"})
+            copyFolder(
+                HAL_serie_cube_path,
+                HAL_serie_core_path,
+                hal_skip_pattern.union(common_skip_pattern),
+            )
             # Update MD file
             updateMDFile(md_HAL_path, serie, cube_HAL_ver)
             # Commit all HAL files
@@ -845,7 +877,11 @@ Included in STM32Cube{0} FW {2}""".format(
             deleteFolder(CMSIS_serie_dest_path)
             # Copy new one
             CMSIS_serie_cube_path = cube_path / cmsis_src_path / f"STM32{serie}xx"
-            copyFolder(CMSIS_serie_cube_path, CMSIS_serie_dest_path, {"iar", "arm"})
+            copyFolder(
+                CMSIS_serie_cube_path,
+                CMSIS_serie_dest_path,
+                cmsis_skip_pattern.union(common_skip_pattern),
+            )
             # Update MD file
             updateMDFile(md_CMSIS_path, serie, cube_CMSIS_ver)
             # Commit all CMSIS files
