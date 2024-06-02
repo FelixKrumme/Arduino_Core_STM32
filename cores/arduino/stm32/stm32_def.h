@@ -20,8 +20,6 @@
                                         |(STM32_CORE_VERSION_PATCH << 8U )\
                                         |(STM32_CORE_VERSION_EXTRA))
 
-#define USE_HAL_DRIVER
-
 #if defined(STM32C0xx)
   #include "stm32c0xx.h"
 #elif defined(STM32F0xx)
@@ -58,6 +56,8 @@
   #include "stm32u5xx.h"
 #elif defined(STM32WBxx)
   #include "stm32wbxx.h"
+#elif defined(STM32WBAxx)
+  #include "stm32wbaxx.h"
 #elif defined(STM32WLxx)
   #include "stm32wlxx.h"
 #else
@@ -69,7 +69,7 @@
 #endif
 
 // Here define some compatibility
-#ifndef ADC1
+#if !defined (ADC1) && defined (ADC)
   #define ADC1 ADC
 #endif
 #ifndef CAN1
@@ -133,6 +133,8 @@ void SystemClock_Config(void);
 #if !defined(_Error_Handler)
 #define _Error_Handler(str, value) \
   while (1) {\
+    (void)str;\
+    (void)value;\
   }
 #endif
 #if !defined(Error_Handler)
